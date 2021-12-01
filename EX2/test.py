@@ -17,20 +17,18 @@ class preceptron:
         local_rate = self.rate
         train_x_local = self.normalize_data_set(self.train_x)
         train_y_local = np.copy(self.train_y)
-        print(train_x_local, train_y_local)
-        epochs = 300
+        epochs = 3
+        self.shuffle(train_x_local, train_y_local)
         for e in range(epochs):
-            count = 0
-            self.shuffle(train_x_local, train_y_local)
             for x, y_iter in zip(train_x_local, train_y_local):
                 y_hat = np.argmax(np.dot(self.w,x))
                 y = int(y_iter[0])
                 if(y_hat != y):
-                    count+=1
-                    self.w[y, :] = self.w[y, :] + local_rate*x 
-                    self.w[y_hat, :] = self.w[y_hat, :] - local_rate*x 
+                    self.w[y] = np.add(self.w[y], local_rate*x) 
+                    self.w[y_hat] = np.subtract(self.w[y_hat], local_rate*x) 
                     self.bias[y] = self.bias[y] + local_rate
                     self.bias[y_hat] = self.bias[y_hat] - local_rate
+            local_rate = 1 / np.sqrt(local_rate)
    
     def predict_point(self, to_predict):
             normalize_to_predict = self.normalize_vector(to_predict, np.average(self.train_x), np.var(self.train_x))
@@ -93,8 +91,8 @@ def main():
     
     # k.train()
     # print()
-    # result = (k.predict(test_x))
-    # print(get_success_rate(result, train_y))
+    result = (k.predict(learn_x))
+    print(get_success_rate(result, learn_y))
     
 def get_success_rate(result, true_cla):
     count = 0
